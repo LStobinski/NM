@@ -4,7 +4,7 @@ import NM.Logger;
 import NM.classes.Matrix;
 
 public class Chapter4 {
-    static Logger LOGGER = Logger.Get("C3");
+    static Logger LOGGER = Logger.Get("C4");
 
     public static void Run() {
         LOGGER.Log("Chapter IV: L/U distribution");

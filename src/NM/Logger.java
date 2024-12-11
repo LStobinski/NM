@@ -31,7 +31,7 @@ public class Logger {
     }
 
     public void Log(String str) {
-        System.out.printf("[%s][%s]: %s%n", LocalTime.now().format(format), name, str);
+        System.out.printf("[%s]: %s%n", name, str);
     }
 
 }
