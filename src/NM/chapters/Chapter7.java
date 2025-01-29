@@ -77,7 +77,7 @@ public class Chapter7 {
     public static double gauss(Function<Double, Double> f, double a, double b, int n) {
         var G = 0.5 * (b - a) * MathHelper.sum(0, n - 1, i ->
                     wi[i] * f.apply(0.5 * (b - a) * X(n, i) + 0.5 * (b + a)));
-        
+        return G;
 
 //        return 0.5 * (b - a) * MathHelper.sum(0, n - 1, i ->
 //                wi[i] * f.apply(0.5 * (b - a) * xi[i] + 0.5 * (b + a))
