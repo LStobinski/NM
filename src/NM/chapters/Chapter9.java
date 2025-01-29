@@ -2,8 +2,10 @@ package NM.chapters;
 
 import NM.Logger;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Chapter9 {
     static Logger LOGGER = Logger.Get("C5");
@@ -14,7 +16,8 @@ public class Chapter9 {
 //        Task_1();
 //        Task_2();
 //        Task_3();
-        Task_4();
+//        Task_4();
+        Task_5();
     }
 
     public static void Task_1() {
@@ -113,6 +116,16 @@ public class Chapter9 {
         LOGGER.Log("");
     }
 
+    public static void Task_5() {
+        LOGGER.Log("Task 5 >>>");
+
+        Double[] y = new Double[2];
+
+        y = stepRK4(, 0, y, 0.1);
+
+        LOGGER.Log("");
+    }
+
     public static double stepRK1(BiFunction<Double, Double, Double> f, double x, double y, double h) {
         return y + h * f.apply(x, y);
     }
@@ -131,21 +144,51 @@ public class Chapter9 {
         return y + (k1 + 2 * k2 + 2 * k3 + k4) / 6;
     }
 
-    public static double[] stepRK4(BiFunction<Double, Double[], Double>[] f, double x, Double[] y, double h) {
-        double[] k1 = new double[4];
-        double[] k2 = new double[4];
-        double[] k3 = new double[4];
-        double[] k4 = new double[4];
+    public static double[] stepEuler(StepFunction[] f, double x, double[] y, double h) {
+        var z = y.clone();
         for (int i = 0; i < y.length; i++)
-            k1[i] = (h * f[i].apply(x, y));
-        for i in range(len(y)):
-        k2.append(h * f[i](x + h / 2, [z + k1[j] / 2 for j, z in enumerate(y)]))
-        for i in range(len(y)):
-        k3.append(h * f[i](x + h / 2, [z + k2[j] / 2 for j, z in enumerate(y)]))
-        for i in range(len(y)):
-        k4.append(h * f[i](x + h, [z + k3[j] for j, z in enumerate(y)]))
-        for i in range(len(y)):
-        y[i] += (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6
-        return y
+            z[i] += h * f[i].step(x, y);
+        return z;
     }
+
+    public static double[] stepRK4(StepFunction[] f, double x, double[] y, double h) {
+        var len = y.length;
+        double[] k1 = new double[len];
+        double[] k2 = new double[len];
+        double[] k3 = new double[len];
+        double[] k4 = new double[len];
+
+        for (int i = 0; i < len; i++)
+            k1[i] = h * f[i].step(x, y);
+
+		var k1_ = Arrays.stream(f).map(f_ -> h * f_.step(x, y)).toList();
+
+    }
+
+    @FunctionalInterface
+    public interface StepFunction {
+        double step(double x, double[] y);
+    }
+
+    /*
+    def step_euler(f, x, y, h):
+        z = y.copy()
+        for i in range(len(y)):
+            z[i] += h * f[i](x, y)
+        return z
+
+    def step_rk4(f, x, y, h):
+        k1, k2, k3, k4 = [], [], [], []
+        for i in range(len(y)):
+            k1.append(h * f[i](x, y))
+        for i in range(len(y)):
+            k2.append(h * f[i](x + h / 2, [z + k1[j] / 2 for j, z in enumerate(y)]))
+        for i in range(len(y)):
+            k3.append(h * f[i](x + h / 2, [z + k2[j] / 2 for j, z in enumerate(y)]))
+        for i in range(len(y)):
+            k4.append(h * f[i](x + h, [z + k3[j] for j, z in enumerate(y)]))
+        for i in range(len(y)):
+            y[i] += (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6
+        return y
+    */
 }
