@@ -3,6 +3,7 @@ package NM.chapters;
 import NM.Logger;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -158,10 +159,17 @@ public class Chapter9 {
         double[] k3 = new double[len];
         double[] k4 = new double[len];
 
+//        var k1_ = Arrays.stream(f).map(f_ -> h * f_.step(x, y)).toList();
         for (int i = 0; i < len; i++)
             k1[i] = h * f[i].step(x, y);
+        for (int i = 0; i < len; i++) {
+            var y_ = y.clone();
+            for (int j = 0; j < len; j++)
+                y_[j] += k1[j] / 2;
+            k2[i] = h * f[i].step(x + h/2, y_);
+        }
 
-		var k1_ = Arrays.stream(f).map(f_ -> h * f_.step(x, y)).toList();
+
 
     }
 
