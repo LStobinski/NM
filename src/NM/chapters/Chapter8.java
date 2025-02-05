@@ -1,157 +1,155 @@
 package NM.chapters;
 
 import NM.Logger;
+import NM.classes.Pair;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class Chapter8 {
-    static Logger LOGGER = Logger.Get("C5");
+    static Logger LOGGER = Logger.Get("C8");
 
     public static void Run() {
-        LOGGER.Log("Chapter V: Interpolation & Approximation");
+        LOGGER.Log("Chapter VIII: Nonlinear Equations");
         LOGGER.Log("==========================");
         Task_1();
-//        Task_2();
+        Task_2();
+        Task_3();
+        Task_4();
     }
 
     public static void Task_1() {
         LOGGER.Log("Task 1 >>>");
 
-        double left = -3;
-        double right = -2;
+        double left = -3, right = -2;
         double eps = 0.0001;
         Function<Double, Double> fun = (x) -> 2 * x * x + 4 * x - 1.0;
         Function<Double, Double> fun$ = (x) -> 4 * x + 4;
 
-        Seek(Chapter8::Bisect, fun, left, right, eps);
-
-        _Bisect(fun, left, right, eps);
-        LOGGER.Log("");
-        Falsi(fun, left, right, eps);
-        LOGGER.Log("");
-        Sieczna(fun, left, right, eps);
-        LOGGER.Log("");
-        Newton(fun, fun$, left, right, eps);
-
-        LOGGER.Log("");
+        Bisect(fun, left, right, eps); LOGGER.Log("");
+        Falsi(fun, left, right, eps); LOGGER.Log("");
+        Secant(fun, left, right, eps); LOGGER.Log("");
+        Newton(fun, fun$, left, right, eps); LOGGER.Log("");
     }
 
-    public static void Seek(
-            Finder METHOD,
-            Function<Double, Double> FUN,
-            double L,
-            double R,
-            double EPS
-    ) {
-        var Rec = new Rec(L, R, Optional.empty());
-        while (Rec.next().isEmpty()) {
-             Rec = METHOD.test(FUN, Rec.left(), Rec.right(), EPS);
-        }
-        LOGGER.Log("[???]: f(" + Rec.next().get() + ") = " + FUN.apply(Rec.next().get()));
+    public static void Task_2() {
+        LOGGER.Log("Task 2 >>>");
+
+        double left = -1.5, right = 0;
+        double eps = 0.00001;
+        Function<Double, Double> fun = (x) -> x + Math.exp(Math.tan(x));
+        Function<Double, Double> fun$ = (x) -> 1 + Math.exp(Math.tan(x)) * (1 / Math.pow(Math.cos(x), 2));
+
+        Bisect(fun, left, right, eps); LOGGER.Log("");
+        Falsi(fun, left, right, eps); LOGGER.Log("");
+        Secant(fun, left, right, eps); LOGGER.Log("");
+        Newton(fun, fun$, left, right, eps); LOGGER.Log("");
     }
 
-    public static Rec Bisect(
-        Function<Double, Double> FUN,
-        double L,
-        double R,
-        double EPS
-    ) {
-        var M = (L + R) / 2;
-        var F$M = FUN.apply(M);
-        if (F$M == 0 || Math.abs(L - R) < EPS) return new Rec(L, R, Optional.of(M));
-        if (FUN.apply(L) * F$M < 0) return new Rec(L, M, Optional.empty());
-        else return new Rec(M, R, Optional.empty());
-    }
+    public static void Task_3() {
+        LOGGER.Log("Task 3 >>>");
 
-    record Rec(double left, double right, Optional<Double> next){};
+        double left = -1.2, right = -0.4;
+        double eps = 0.00001;
+        Function<Double, Double> fun = (x) -> 1/x + 2*x + 3;
+        Function<Double, Double> fun$ = (x) -> -1/(x*x) + 2;
 
-    public static void _Bisect(
-            Function<Double, Double> FUN,
-            double L,
-            double R,
-            double EPS
-    ) {
-        while (Math.abs(L - R) > EPS) {
-            var M = (L + R) / 2;
-            var F$M = FUN.apply(M);
-            LOGGER.Log("[bis]: f(" + M + ") = " + F$M);
+        if (fun.apply(left) * fun.apply(right) < 0) {
+            Bisect(fun, left, right, eps); LOGGER.Log("");
+            Falsi(fun, left, right, eps); LOGGER.Log("");
+            Secant(fun, left, right, eps); LOGGER.Log("");
+            Newton(fun, fun$, left, right, eps); LOGGER.Log("");
+        } else {
+            var mid = (right - left) / 2;
 
-            if (F$M == 0) return;
-            if (FUN.apply(L) * F$M < 0) R = M;
-            else L = M;
+            Bisect(fun, left, mid, eps); LOGGER.Log("");
+            Bisect(fun, mid, right, eps); LOGGER.Log("");
 
-        }
-        ;
-    }
+            Falsi(fun, left, mid, eps); LOGGER.Log("");
+            Falsi(fun, mid, right, eps); LOGGER.Log("");
 
-    public static void Falsi(
-            Function<Double, Double> FUN,
-            double L,
-            double R,
-            double EPS
-    ) {
-//        Function<Double, Double> G = (x) ->
-//                x * ((FUN.apply(L) - FUN.apply(R)) / (L - R)) + FUN.apply(L);
+            Secant(fun, left, mid, eps); LOGGER.Log("");
+            Secant(fun, mid, right, eps); LOGGER.Log("");
 
-        while (FUN.apply(L) * FUN.apply(R) < 0) {
-            var M = L - FUN.apply(L) / (FUN.apply(R) - FUN.apply(L)) * (R - L);
-            LOGGER.Log("[fal]: f(" + M + ") = " + FUN.apply(M));
-
-            if (Math.abs(FUN.apply(M))<EPS) return;
-
-            if (FUN.apply(L)* FUN.apply(M)<0) R = M;
-            else L = M;
-
+            Newton(fun, fun$, left, mid, eps); LOGGER.Log("");
+            Newton(fun, fun$, mid, right, eps); LOGGER.Log("");
         }
     }
 
-    public static void Sieczna(
-            Function<Double, Double> FUN,
-            double L,
-            double R,
-            double EPS
-    ) {
-        //BiPredicate<Double,Double> predicate = (l, r) -> FUN.apply(l) * FUN.apply(r) < 0;
+    public static void Task_4() {
+        LOGGER.Log("Task 4 >>>");
 
-        var Z1 = L;
-        var Z2 = R;
-        while (FUN.apply(Z1) * FUN.apply(Z2) < 0) {
-            var Z3 = Z1 - FUN.apply(Z1) / (FUN.apply(Z2) - FUN.apply(Z1)) * (Z2 - Z1);
-            LOGGER.Log("[sie]: f(" + Z3 + ") = " + FUN.apply(Z3));
+        double left = -1.0, right = 0.5;
+        double eps = 0.0001;
+        Function<Double, Double> fun = (x) -> x*x*x;
+        Function<Double, Double> fun$ = (x) -> 3*x*x;
 
-            if (Math.abs(FUN.apply(Z3)) < EPS) return;
+        Bisect(fun, left, right, eps); LOGGER.Log("");
+        Falsi(fun, left, right, eps); LOGGER.Log("");
+        Secant(fun, left, right, eps); LOGGER.Log("");
+        Newton(fun, fun$, left, right, eps); LOGGER.Log("");
+        // niska wartość pochodnej (funkcja jest płaska w pobliżu miejsca 0)
+        // powoduje, że różnica pomiędzy kolejnymi punktami iteracyjnymi jest mała
+        // co sprawia, że metody zbiegają powoli
+        // nie ma to jednak wpływu na m. bisekcji, ponieważ nie wspomaga się wartoścą badanej funkcji
+    }
 
-
-            if (FUN.apply(Z1)* FUN.apply(Z3) < 0) Z2 = Z3;
-            else Z1 = Z3;
-
+    public static double Bisect(Function<Double, Double> f, double a, double b, double epsilon) {
+        double l = a, r = b;
+        double x = a, fx;
+        int it = 0;
+        while (r - l > epsilon) {
+            x = (l + r) / 2;
+            fx = f.apply(x);
+            LOGGER.Log("[bisect][" + (++it) + "]: f(" + x + ") = " + fx);
+            if (fx == 0) break;
+            if (f.apply(l) * fx < 0) r = x;
+            else l = x;
         }
+        return x;
     }
 
-    public static void Newton(
-            Function<Double, Double> FUN,
-            Function<Double, Double> FUN$,
-            double L,
-            double R,
-            double EPS
-    ) {
-        var Z1 = L;
-        var Z2 = R;
-        while (FUN.apply(Z1) * FUN.apply(Z2) < 0) {
-            var Z3 = Z1 - FUN.apply(Z1) / FUN$.apply(Z1);
-            LOGGER.Log("[new]: f(" + Z3 + ") = " + FUN.apply(Z3));
+    public static double Falsi(Function<Double, Double> f, double a, double b, double epsilon) {
+        double l = a;
+		double x, fx;
+        int it = 0;
+        do {
+            x = l - (f.apply(l) / (f.apply(b) - f.apply(l))) * (b - l);
+            fx = f.apply(x);
+            LOGGER.Log("[falsi][" + (++it) + "]: f(" + x + ") = " + fx);
+            if (fx == 0) break;
+            l = x;
+        } while (Math.abs(fx) > epsilon);
+        return x;
+    }
 
-            if (Math.abs(FUN.apply(Z3)) < EPS) return;
-
-            if (FUN.apply(Z1)* FUN.apply(Z3) < 0) Z2 = Z3;
-            else Z1 = Z3;
+    public static double Secant(Function<Double, Double> f, double a, double b, double epsilon) {
+        double x1 = a, x2 = b;
+        double x3 = a, fx;
+        int it = 0;
+        while (Math.abs(x2 - x1) > epsilon) {
+            x3 = x2 - f.apply(x2) / (f.apply(x2) - f.apply(x1)) * (x2 - x1);
+            fx = f.apply(x3);
+            LOGGER.Log("[secant][" + (++it) + "]: f(" + x3 + ") = " + fx);
+            if (fx == 0) break;
+            x1 = x2;
+            x2 = x3;
         }
+        return x3;
     }
 
-    @FunctionalInterface
-    interface Finder {
-        Rec test(Function<Double, Double> FUN, double L, double R, double EPS);
+    public static double Newton(Function<Double, Double> f, Function<Double, Double> f$, double a, double b, double epsilon) {
+        double x = (b-a)/2;
+        double fx, f$x;
+        int it = 0;
+        do {
+            fx = f.apply(x);
+            f$x = f$.apply(x);
+            if (f$x == 0) throw new IllegalStateException("f'(x) = 0");
+            x = x - fx / f$x;
+            LOGGER.Log("[newton][" + (++it) + "]: f(" + x + ") = " + fx);
+        } while (Math.abs(fx) > epsilon);
+        return x;
     }
-
 }

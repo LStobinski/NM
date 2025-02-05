@@ -11,9 +11,9 @@ public class Main {
 //        Chapter4.Run();
 //        Chapter5.Run();
 
-//        Chapter6.Run();
-//        Chapter8.Run();
-        Chapter9.Run();
+        Chapter6.Run();
+        Chapter7.Run();
+        Chapter8.Run();
 
     }
 }

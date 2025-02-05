@@ -1,187 +1,192 @@
 package NM.chapters;
 
 import NM.Logger;
-import NM.classes.DerivativeFunction;
 import NM.classes.MathHelper;
+import NM.classes.Pair;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 public class Chapter6 {
-    static Logger LOGGER = Logger.Get("C5");
+	static Logger LOGGER = Logger.Get("C6");
 
-    public static void Run() {
-        LOGGER.Log("Chapter VI: Numerical Derivatives");
-        LOGGER.Log("==========================");
-//        Task_1();
-//        Task_2();
-//        Task_2b();
-//        Task_3();
-//        Task_4();
-//        Task_5();
-        Task_6();
+	public static void Run() {
+		LOGGER.Log("Chapter VI: Numerical Derivatives");
+		LOGGER.Log("==========================");
+		Task_1();
+		Task_2();
+		Task_3();
+		Task_4();
+		Task_5();
+		Task_6();
 
-    }
+	}
 
-    public static void Task_1() {
-        LOGGER.Log("Task 1 >>>");
+	public static void Task_1() {
+		LOGGER.Log("Task 1 >>>");
 
-        //...
+		//...
 
-        LOGGER.Log("");
-    }
+		LOGGER.Log("");
+	}
 
-    public static void Task_2() {
-        LOGGER.Log("Task 2 >>>");
+	public static void Task_2() {
+		LOGGER.Log("Task 2 >>>");
 
-        Function<Double, Double> fun = x -> 3*x*x*x - 2*x*x + 1;
+		Function<Double, Double> fun = x -> 3 * x * x * x - 2 * x * x + 1;
+		double x = 0.75;
+		double[] H = {
+				0.1,
+				0.01,
+				0.001
+		};
+		List<Pair<String, Derivative>> DRV = List.of(
+				Pair.of("2PF", Derivative.DRV1_2PF),
+				Pair.of("2PC", Derivative.DRV1_2PC),
+				Pair.of("3PF", Derivative.DRV1_3PF)
+		);
+		double exact = 2.0625;
 
-        double x = 0.75;
-        double h = 0.01;
+		for (var h : H) {
+			LOGGER.Log("h = " + h);
+			for (var drv : DRV) {
+				var name = drv.getFirst();
+				var value = drv.getSecond().apply(fun, x, h);
+				LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value));
+			}
+		}
 
-        var _2pf = MathHelper.derivative_1_2pf(fun, x, h);
-        var _2pc = MathHelper.derivative_1_2pc(fun, x, h);
-        var _3pf = MathHelper.derivative_1_3pf(fun, x, h);
+		LOGGER.Log("");
+	}
 
-        double d = 2.625;
+	public static void Task_3() {
+		LOGGER.Log("Task 3 >>>");
 
-        LOGGER.Log("2pf: " + _2pf + " | error: " + (d - _2pf));
-        LOGGER.Log("2pc: " + _2pc + " | error: " + (d - _2pc));
-        LOGGER.Log("3pf: " + _3pf + " | error: " + (d - _3pf));
+		Function<Double, Double> fun = x -> x * Math.sin(x * x) + 1;
+		double x = 1;
+		double[] H = {
+				0.1,
+				0.01,
+				0.001
+		};
+		List<Pair<String, Derivative>> DRV = List.of(
+				Pair.of("2PF", Derivative.DRV1_2PF),
+				Pair.of("2PC", Derivative.DRV1_2PC)
+		);
+		double exact = 1.92207559654417594145437553651;
 
-        LOGGER.Log("");
-    }
+		for (var h : H) {
+			LOGGER.Log("h = " + h);
+			for (var drv : DRV) {
+				var name = drv.getFirst();
+				var value = drv.getSecond().apply(fun, x, h);
+				LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value));
+			}
+		}
 
-    public static void Task_2b() {
-        LOGGER.Log("Task 2b >>>");
+		LOGGER.Log("");
+	}
 
-        Function<Double, Double> fun = x -> 3*x*x*x - 2*x*x + 1;
+	public static void Task_4() {
+		LOGGER.Log("Task 4 >>>");
 
-        double x = 0.75;
-        double h1 = (double) 1 / 1000;
-        double h2 = (double) 1 / 1024;
+		Function<Double, Double> fun = Math::exp;
+		double x = 0;
+		double[] H = {
+				0.1,
+				0.01,
+				0.001
+		};
+		List<Pair<String, Derivative>> DRV = List.of(
+				Pair.of("2PF", Derivative.DRV1_2PF),
+				Pair.of("2PC", Derivative.DRV1_2PC),
+				Pair.of("3PF", Derivative.DRV1_3PF)
+		);
+		double exact = 1.0;
 
-        var _2pc1 = MathHelper.derivative_1_2pc(fun, x, h1);
-        var _2pc2 = MathHelper.derivative_1_2pc(fun, x, h2);
+		for (var h : H) {
+			LOGGER.Log("h = " + h);
+			for (var drv : DRV) {
+				var name = drv.getFirst();
+				var value = drv.getSecond().apply(fun, x, h);
+				LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value));
+			}
+		}
 
-        double d = 2.625;
+		LOGGER.Log("");
+	}
 
-        LOGGER.Log("2pc1: " + _2pc1 + " | error: " + (d - _2pc1));
-        LOGGER.Log("2pc2: " + _2pc2 + " | error: " + (d - _2pc2));
+	public static void Task_5() {
+		LOGGER.Log("Task 5 >>>");
 
-        LOGGER.Log("");
-    }
+		Function<Double, Double> fun = x -> 3 * x * x * x - 2 * x * x + 1;
+		double x = 0.75;
+		double[] H = {
+				0.1,
+				0.01,
+				0.001
+		};
+		List<Pair<String, Derivative>> DRV = List.of(
+				Pair.of("3PF", Derivative.DRV2_3PF),
+				Pair.of("3PC", Derivative.DRV2_3PC)
+		);
+		double exact = 9.5;
 
-    public static void Task_3() {
-        LOGGER.Log("Task 3 >>>");
+		for (var h : H) {
+			LOGGER.Log("h = " + h);
+			for (var drv : DRV) {
+				var name = drv.getFirst();
+				var value = drv.getSecond().apply(fun, x, h);
+				LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value));
+			}
+		}
 
-        Function<Double, Double> fun = x -> x * Math.sin(x * x) + 1;
+		LOGGER.Log("");
+	}
 
-        double x = 1;
-        double h1 = 0.01;
-        double h2 = 0.001;
+	public static void Task_6() {
+		LOGGER.Log("Task 6 >>>");
 
-        var _2pf1 = MathHelper.derivative_1_2pf(fun, x, h1);
-        var _2pc1 = MathHelper.derivative_1_2pc(fun, x, h1);
-        var _2pf2 = MathHelper.derivative_1_2pf(fun, x, h2);
-        var _2pc2 = MathHelper.derivative_1_2pc(fun, x, h2);
+		Function<Double, Double> fun = Math::exp;
+		double[] X = {0, 1};
+		double[] H = {0.1, 0.0001, 0.0000001};
+		List<Pair<String, Derivative>> DRV = List.of(
+				Pair.of("3PF", Derivative.DRV2_3PF),
+				Pair.of("3PC", Derivative.DRV2_3PC)
+		);
 
-        double d = 1.92207559654417594145437553651;
+		for (var x : X) {
+			for (var h : H) {
+				LOGGER.Log("x = " + x + ", h = " + h);
+				for (var drv : DRV) {
+					var name = drv.getFirst();
+					var value = drv.getSecond().apply(fun, x, h);
+					LOGGER.Log(" -> " + name + ": " + value + " | error: " + ((x == 0 ? 1 : Math.E) - value));
+				}
+			}
+		}
 
-        LOGGER.Log("2pf1: " + _2pf1 + " | error: " + (d - _2pf1));
-        LOGGER.Log("2pc1: " + _2pc1 + " | error: " + (d - _2pc1));
+		LOGGER.Log("");
+	}
 
-        LOGGER.Log("2pf2: " + _2pf2 + " | error: " + (d - _2pf2));
-        LOGGER.Log("2pc2: " + _2pc2 + " | error: " + (d - _2pc2));
+	@FunctionalInterface
+	public interface Derivative {
+		double apply(Function<Double, Double> f, double x, double h);
 
-        LOGGER.Log("");
-    }
+		Derivative DRV1_2PF = (f, x, h) ->
+				(f.apply(x + h) - f.apply(x)) / h;
 
-    public static void Task_4() {
-        LOGGER.Log("Task 4 >>>");
+		Derivative DRV1_2PC = (f, x, h) ->
+				(f.apply(x + h) - f.apply(x - h)) / (2 * h);
 
-        Function<Double, Double> fun = Math::exp;
+		Derivative DRV1_3PF = (f, x, h) ->
+				((4 * f.apply(x + h)) - (3 * f.apply(x)) - (f.apply(x + 2 * h))) / (2 * h);
 
-        double x = 0;
-        double h1 = 0.001;
-        double h2 = 0.0001;
+		Derivative DRV2_3PF = (f, x, h) ->
+				(f.apply(x) - (2 * f.apply(x + h)) + f.apply(x + 2 * h)) / (h * h);
 
-        var _2pf1 = MathHelper.derivative_1_2pf(fun, x, h1);
-        var _2pc1 = MathHelper.derivative_1_2pc(fun, x, h1);
-        var _3pf1 = MathHelper.derivative_1_3pf(fun, x, h1);
-
-        var _2pf2 = MathHelper.derivative_1_2pf(fun, x, h2);
-        var _2pc2 = MathHelper.derivative_1_2pc(fun, x, h2);
-        var _3pf2 = MathHelper.derivative_1_3pf(fun, x, h2);
-
-        double d = 1.0;
-
-        LOGGER.Log("2pf1: " + _2pf1 + " | error: " + (d - _2pf1));
-        LOGGER.Log("2pc1: " + _2pc1 + " | error: " + (d - _2pc1));
-        LOGGER.Log("3pf1: " + _3pf1 + " | error: " + (d - _3pf1));
-
-        LOGGER.Log("2pf2: " + _2pf2 + " | error: " + (d - _2pf2));
-        LOGGER.Log("2pc2: " + _2pc2 + " | error: " + (d - _2pc2));
-        LOGGER.Log("3pf2: " + _3pf2 + " | error: " + (d - _3pf2));
-
-        LOGGER.Log("");
-    }
-
-    public static void Task_5() {
-        LOGGER.Log("Task 5 >>>");
-
-        Function<Double, Double> fun = x -> 3*x*x*x - 2*x*x + 1;
-
-        double x = 0.75;
-        double h1 = 0.01;
-        double h2 = 0.001;
-
-        var _2pf1 = MathHelper.derivative_2_2pf(fun, x, h1);
-        var _2pc1 = MathHelper.derivative_2_2pc(fun, x, h1);
-
-        var _2pf2 = MathHelper.derivative_2_2pf(fun, x, h2);
-        var _2pc2 = MathHelper.derivative_2_2pc(fun, x, h2);
-
-        double d = 9.5;
-
-        LOGGER.Log("2pf1: " + _2pf1 + " | error: " + (d - _2pf1));
-        LOGGER.Log("2pc1: " + _2pc1 + " | error: " + (d - _2pc1));
-
-        LOGGER.Log("2pf2: " + _2pf2 + " | error: " + (d - _2pf2));
-        LOGGER.Log("2pc2: " + _2pc2 + " | error: " + (d - _2pc2));
-
-        LOGGER.Log("");
-    }
-
-    public static void Task_6() {
-        LOGGER.Log("Task 6 >>>");
-
-        Function<Double, Double> fun = Math::exp;
-//        DerivativeFunction<Double>[] drv = new DerivativeFunction[]{MathHelper::derivative_2_2pf, MathHelper::derivative_2_2pc};
-        double[] X = {0, 1};
-        double[] H = {0.1, 0.0001, 0.0000001};
-
-        for (var x : X) for (var h : H) {
-            var d = x == 0 ? 1 : Math.E;
-            var value1 = MathHelper.derivative_2_2pf(fun, x, h);
-            var value2 = MathHelper.derivative_2_2pc(fun, x, h);
-            LOGGER.Log("[2pf/x:" + x + "/h:" + h + "]: " + value1 + " | error: " + (d - value1));
-            LOGGER.Log("[2pc/x:" + x + "/h:" + h + "]: " + value2 + " | error: " + (d - value2));
-        }
-
-        LOGGER.Log("");
-    }
-
-    /*
-
-    public static void Task_1() {
-        LOGGER.Log("Task 1 >>>");
-
-        //...
-
-        LOGGER.Log("");
-    }
-
-    */
+		Derivative DRV2_3PC = (f, x, h) ->
+				(f.apply(x + h) - (2 * f.apply(x)) + f.apply(x - h)) / (h * h);
+	}
 
 }
