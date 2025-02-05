@@ -13,9 +13,11 @@ public class Chapter7 {
     public static void Run() {
         LOGGER.Log("Chapter VII: Numerical Integration");
         LOGGER.Log("==========================");
-//        Task_1();
-//        Task_2();
+        Task_1();
+        Task_2();
         Task_3();
+        Task_4();
+        Task_5();
     }
 
     public static void Task_1() {
@@ -105,88 +107,128 @@ public class Chapter7 {
     public static void Task_4() {
         LOGGER.Log("Task 4 >>>");
 
-        Function<Double, Double> fun = x -> 4*x*x*x + 5*x*x + 1;
-        double xa = -1.0, xb = 1.0;
-        int[] N = {2, 3, 4};
-        List<Pair<String, Integral>> INT = List.of(
-                Pair.of("RECT", Integral.INT_RECT),
-                Pair.of("TRAP", Integral.INT_TRAP),
-                Pair.of("SIMP", Integral.INT_SIMP)
-        );
-        double exact = 16 / 3d;
+        { // 1
+            Function<Double, Double> fun = x -> 4*x*x*x + 5*x*x + 1;
+            double xa = -1.0, xb = 1.0;
+            int[] N = {2, 3, 4};
+            List<Pair<String, Integral>> INT = List.of(
+                    Pair.of("RECT", Integral.INT_RECT),
+                    Pair.of("TRAP", Integral.INT_TRAP),
+                    Pair.of("SIMP", Integral.INT_SIMP),
+                    Pair.of("GAUSS", Integral.INT_GAUSS_LEGENDRE)
+            );
+            double exact = 16 / 3d;
 
-        LOGGER.Log("Exact: " + exact);
-        for (var n : N) {
-            LOGGER.Log("n = " + n + " -> h = " + (xb - xa) / n);
-            for (var integ : INT) {
-                var name = integ.getFirst();
-                var startTime = System.nanoTime();
-                var value = integ.getSecond().apply(fun, xa, xb, n);
-                var deltaTime = System.nanoTime() - startTime;
-                LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value) + " | time (nano): " + deltaTime);
+            LOGGER.Log("Exact: " + exact);
+            for (var n : N) {
+                LOGGER.Log("n = " + n + " -> h = " + (xb - xa) / n);
+                for (var integ : INT) {
+                    var name = integ.getFirst();
+                    var startTime = System.nanoTime();
+                    var value = integ.getSecond().apply(fun, xa, xb, n);
+                    var deltaTime = System.nanoTime() - startTime;
+                    LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value) + " | time (nano): " + deltaTime);
+                }
             }
         }
 
+        { // 3
+            Function<Double, Double> fun = x -> Math.cos(x) + Math.exp(x) + Math.tan(x);
+            double xa = 0.0, xb = 1.0;
+            int[] N = {2, 3, 4};
+            List<Pair<String, Integral>> INT = List.of(
+                    Pair.of("RECT", Integral.INT_RECT),
+                    Pair.of("TRAP", Integral.INT_TRAP),
+                    Pair.of("SIMP", Integral.INT_SIMP),
+                    Pair.of("GAUSS", Integral.INT_GAUSS_LEGENDRE)
+            );
+            double exact = 3.175379283652956004159827;
 
-
-
-        Function<Double, Double> p = (x) -> {
-            return 1.0;
-        };
-
-        Function<Double, Double> F = (x) -> {
-            return 2.0;
-        };
-
-        LOGGER.Log("");
-    }
-
-
-    static double[] wi = {
-            1.0d,
-            1.0d
-    };
-
-    static double[] xi = {
-            -0.577350269,
-            0.577350269
-    };
-
-    static double X(int n, int i) {
-        return switch (n) {
-            case 2 -> new double[] {
-                    -0.577350269,
-                    0.577350269
-            }[i];
-            case 3 -> new double[] {
-                    0.774596669,
-                    0.0,
-                    0.774596669
-            }[i];
-            //...
-            default -> throw new IllegalStateException("Unexpected value: " + n);
-        };
-    }
-
-    public static double _gauss(Function<Double, Double> f, double a, double b, int n) {
-        var G = 0.5 * (b - a) * MathHelper.sum(0, n - 1, i ->
-                    wi[i] * f.apply(0.5 * (b - a) * X(n, i) + 0.5 * (b + a)));
-        return G;
-
-//        return 0.5 * (b - a) * MathHelper.sum(0, n - 1, i ->
-//                wi[i] * f.apply(0.5 * (b - a) * xi[i] + 0.5 * (b + a))
-//        );
-    };
-
-    /*
-    public static void Task_1() {
-        LOGGER.Log("Task 1 >>>");
-
-        // ...
+            LOGGER.Log("Exact: " + exact);
+            for (var n : N) {
+                LOGGER.Log("n = " + n + " -> h = " + (xb - xa) / n);
+                for (var integ : INT) {
+                    var name = integ.getFirst();
+                    var startTime = System.nanoTime();
+                    var value = integ.getSecond().apply(fun, xa, xb, n);
+                    var deltaTime = System.nanoTime() - startTime;
+                    LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value) + " | time (nano): " + deltaTime);
+                }
+            }
+        }
 
         LOGGER.Log("");
     }
-    */
+
+    public static void Task_5() {
+        LOGGER.Log("Task 5 >>>");
+
+        Integral INT_COMPOUND = (f, a, b, n) -> {
+            var h = (b - a) / 2;
+            return (b - a) / (2 * 5) * MathHelper.sum(1, 5, k ->
+                    MathHelper.sum(0, n - 1, i -> {
+                                var x1 = a + k * h;
+                                var x2 = x1 + h;
+                                return Gauss.weight(n, i) * f.apply((x1 + x2) / 2 + ((x2 - x1) / 2) * Gauss.node(n, i));
+                            }
+                    )
+            );
+        };
+
+        { // 1
+            Function<Double, Double> fun = x -> 4*x*x*x + 5*x*x + 1;
+            double xa = -1.0, xb = 1.0;
+            int[] N = {2, 3, 4};
+            List<Pair<String, Integral>> INT = List.of(
+                    Pair.of("RECT", Integral.INT_RECT),
+                    Pair.of("TRAP", Integral.INT_TRAP),
+                    Pair.of("SIMP", Integral.INT_SIMP),
+                    Pair.of("GAUSS", Integral.INT_GAUSS_LEGENDRE),
+                    Pair.of("COMP", INT_COMPOUND)
+            );
+            double exact = 16 / 3d;
+
+            LOGGER.Log("Exact: " + exact);
+            for (var n : N) {
+                LOGGER.Log("n = " + n + " -> h = " + (xb - xa) / n);
+                for (var integ : INT) {
+                    var name = integ.getFirst();
+                    var startTime = System.nanoTime();
+                    var value = integ.getSecond().apply(fun, xa, xb, n);
+                    var deltaTime = System.nanoTime() - startTime;
+                    LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value) + " | time (nano): " + deltaTime);
+                }
+            }
+        }
+
+        { // 3
+            Function<Double, Double> fun = x -> Math.cos(x) + Math.exp(x) + Math.tan(x);
+            double xa = 0.0, xb = 1.0;
+            int[] N = {2, 3, 4};
+            List<Pair<String, Integral>> INT = List.of(
+                    Pair.of("RECT", Integral.INT_RECT),
+                    Pair.of("TRAP", Integral.INT_TRAP),
+                    Pair.of("SIMP", Integral.INT_SIMP),
+                    Pair.of("GAUSS", Integral.INT_GAUSS_LEGENDRE),
+                    Pair.of("COMP", INT_COMPOUND)
+            );
+            double exact = 3.175379283652956004159827;
+
+            LOGGER.Log("Exact: " + exact);
+            for (var n : N) {
+                LOGGER.Log("n = " + n + " -> h = " + (xb - xa) / n);
+                for (var integ : INT) {
+                    var name = integ.getFirst();
+                    var startTime = System.nanoTime();
+                    var value = integ.getSecond().apply(fun, xa, xb, n);
+                    var deltaTime = System.nanoTime() - startTime;
+                    LOGGER.Log(" -> " + name + ": " + value + " | error: " + (exact - value) + " | time (nano): " + deltaTime);
+                }
+            }
+        }
+
+        LOGGER.Log("");
+    }
 
     @FunctionalInterface
     public interface Integral {
@@ -214,7 +256,7 @@ public class Chapter7 {
         };
 
         Integral INT_GAUSS_LEGENDRE = (f, a, b, n) ->
-                (b - a) / 2 * MathHelper.sum(0, n, i ->
+                (b - a) / 2 * MathHelper.sum(0, n - 1, i ->
                     Gauss.weight(n, i) * f.apply((b - a) / 2 * Gauss.node(n, i) + (b + a) / 2)
                 );
     }
